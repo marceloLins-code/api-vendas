@@ -13,9 +13,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import jdk.jfr.Timestamp;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -27,9 +27,10 @@ public class Venda  {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	//@FutureOrPresent
-	@CreationTimestamp
-	private LocalDate dataVenda; 
+	//@FutureOrPresentS
+	@Column(nullable = false)
+	@Timestamp
+	private LocalDate dataVenda;
 	
 	@UpdateTimestamp
 	@Column(nullable = false)
