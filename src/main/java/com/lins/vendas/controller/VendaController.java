@@ -2,6 +2,8 @@ package com.lins.vendas.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,9 +40,11 @@ public class VendaController {
 	}
 
 	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public Venda adicionar(@RequestBody Venda venda) {
-		return vendaRepository.save(venda);
+	public ResponseEntity<?> adicionar(@RequestBody Venda venda) {
+		venda = vendaRepository.save(venda);
+		
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(venda);
 	}
 
 	@PutMapping("/{vendaId}")
@@ -48,7 +52,7 @@ public class VendaController {
 		Venda vendaAtual = vendaRepository.getById(vendaId);
 
 		if (vendaAtual != null) {
-			BeanUtils.copyProperties(venda, vendaAtual, "id");
+			BeanUtils.copyProperties(venda, vendaAtual, "id", "produtos");
 
 			vendaAtual = vendaRepository.save(vendaAtual);
 			return ResponseEntity.ok(vendaAtual);
