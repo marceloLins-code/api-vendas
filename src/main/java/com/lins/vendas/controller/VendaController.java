@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lins.vendas.Repository.VendaRepository;
@@ -40,8 +39,10 @@ public class VendaController {
 	}
 
 	@PostMapping
-	public ResponseEntity<?> adicionar(@RequestBody Venda venda) {
+	public ResponseEntity<?> adicionar(@RequestBody @Valid Venda venda) {
+		venda.setDataEntrega(venda.getDataVenda().plusDays(10));
 		venda = vendaRepository.save(venda);
+		
 		
 		return ResponseEntity.status(HttpStatus.CREATED)
 				.body(venda);
@@ -52,7 +53,7 @@ public class VendaController {
 		Venda vendaAtual = vendaRepository.getById(vendaId);
 
 		if (vendaAtual != null) {
-			BeanUtils.copyProperties(venda, vendaAtual, "id", "produtos");
+			BeanUtils.copyProperties(venda, vendaAtual, "id", "produtos", "dataVenda");
 
 			vendaAtual = vendaRepository.save(vendaAtual);
 			return ResponseEntity.ok(vendaAtual);

@@ -13,9 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
-import org.hibernate.annotations.UpdateTimestamp;
-
-import jdk.jfr.Timestamp;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -29,10 +26,9 @@ public class Venda  {
 
 	//@FutureOrPresentS
 	@Column(nullable = false)
-	@Timestamp
-	private LocalDate dataVenda;
+	private LocalDate dataVenda ;
 	
-	@UpdateTimestamp
+	
 	@Column(nullable = false)
 	private LocalDate dataEntrega;
 	
@@ -40,10 +36,7 @@ public class Venda  {
 	@JoinTable(name = "vendas_x_produtos", joinColumns = @JoinColumn(name = "venda_id"),
 	inverseJoinColumns = @JoinColumn(name = "produto_id"))
 	private List<Produto> produtos = new ArrayList<>();
+	
 
-	public LocalDate gerarDataEntrega() {
-		return this.dataEntrega = dataVenda.plusDays(10);
-		
-		}
 
 }
