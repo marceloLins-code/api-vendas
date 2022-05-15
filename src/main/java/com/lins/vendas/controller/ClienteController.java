@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -59,13 +60,19 @@ public class ClienteController {
 		return ResponseEntity.notFound().build();
 	}
 	@DeleteMapping("/{clienteId}")
-	public ResponseEntity<Void> remover(@PathVariable Integer clienteId) {
-		if (!clienteRepository.existsById(clienteId)) {
+	public ResponseEntity<Cliente> remover(@PathVariable Integer clienteId) {
+		try {
+			Cliente cliente = clienteRepository.getById(clienteId);
+			
+			if (cliente != null) {
+				clienteRepository.delete(cliente);
+				
+				return ResponseEntity.noContent().build();
+			}
+			
 			return ResponseEntity.notFound().build();
+		} catch (DataIntegrityViolationException e) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
 		}
-		
-		clienteRepository.deleteById(clienteId);
-		
-		return ResponseEntity.noContent().build();
 	}
 }

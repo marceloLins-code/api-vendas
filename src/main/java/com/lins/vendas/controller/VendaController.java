@@ -1,11 +1,11 @@
 package com.lins.vendas.controller;
 
+import java.time.LocalDate;
 import java.util.List;
-
-import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,8 +39,9 @@ public class VendaController {
 	}
 
 	@PostMapping
-	public ResponseEntity<?> adicionar(@RequestBody @Valid Venda venda) {
-		venda.setDataEntrega(venda.getDataVenda().plusDays(10));
+	public ResponseEntity<?> adicionar(Venda venda) {
+		venda.setDataVenda(LocalDate.now());
+		venda.setDataEntrega(LocalDate.now().plusDays(10));
 		venda = vendaRepository.save(venda);
 		
 		
@@ -63,14 +64,19 @@ public class VendaController {
 	}
 
 	@DeleteMapping("/{vendaId}")
-	public ResponseEntity<Void> remover(@PathVariable Integer vendaId) {
-		if (!vendaRepository.existsById(vendaId)) {
+	public ResponseEntity<Venda> remover(@PathVariable Integer vendaId) {
+		try {
+			Venda venda = vendaRepository.getById(vendaId);
+			
+			if (venda != null) {
+				vendaRepository.delete(venda);
+				
+				return ResponseEntity.noContent().build();
+			}
+			
 			return ResponseEntity.notFound().build();
+		} catch (DataIntegrityViolationException e) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
 		}
-
-		vendaRepository.deleteById(vendaId);
-
-		return ResponseEntity.noContent().build();
 	}
-
 }
